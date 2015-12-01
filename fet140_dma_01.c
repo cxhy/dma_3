@@ -36,9 +36,11 @@ void main(void)
   
 // #pragma location=0x0200 
 //  __no_init static char data[5];
-  __no_init  static unsigned char data[96] @ 0x0200 ;
+  __no_init  static unsigned char data_0[96] @ 0x0200 ;
+  __no_init  static unsigned char data_1[96] @ 0x0300 ;
+  __no_init  static unsigned char data_3[96] @ 0x0500 ;
 //  P3DIR = 0xff;
-  
+   
  // P1DIR |= 0x01;                            // P1.0  output
  // P6DIR |= 0x00;  
   DMA0SA = 0x0200;                          // Start block address
@@ -46,9 +48,9 @@ void main(void)
   DMA0SZ = 0x0020;                           // Block size
  
   
-  // DMA1SA = 0x0300;                          // Start block address
-  // DMA1DA = 0x03f0;                          // Destination block address
-  // DMA1SZ = 0x0020;                           // Block size
+  DMA1SA = 0x0300;                          // Start block address
+  DMA1DA = 0x03f0;                          // Destination block address
+  DMA1SZ = 0x0020;                           // Block size
   
   
   // DMA2SA = 0x0400;                          // Start block address
@@ -56,9 +58,9 @@ void main(void)
   // DMA2SZ = 0x0020;                           // Block size
   
   
-  // DMA3SA = 0x0500;                          // Start block address
-  // DMA3DA = 0x05f0;                          // Destination block address
-  // DMA3SZ = 0x0020;                           // Block size
+  DMA3SA = 0x0500;                          // Start block address
+  DMA3DA = 0x05f0;                          // Destination block address
+  DMA3SZ = 0x0020;                           // Block size
   
   
   
@@ -67,19 +69,27 @@ void main(void)
   // DMA4SZ = 0x0020;                           // Block size
   
   
-  DMA0CTL = DMADT_1 + DMASRCBYTE + DMASRCINCR_3 + DMADSTBYTE + DMAEN; // Rpt, inc SRC, DST
-  // DMA1CTL = DMADT_1 + DMASRCBYTE + DMASRCINCR_3 + DMADSTBYTE + DMAEN; // Rpt, inc SRC, DST
+  DMA0CTL = DMADT_0 + DMASRCBYTE + DMASRCINCR_3 + DMADSTBYTE + DMAEN; // Rpt, inc SRC, DST
+  DMA1CTL = DMADT_0 + DMASRCBYTE + DMASRCINCR_3 + DMADSTBYTE + DMAEN; // Rpt, inc SRC, DST
   // DMA2CTL = DMADT_1 + DMASRCBYTE + DMASRCINCR_3 + DMADSTBYTE + DMAEN; // Rpt, inc SRC, DST
-  // DMA3CTL = DMADT_1 + DMASRCBYTE + DMASRCINCR_3 + DMADSTBYTE + DMAEN; // Rpt, inc SRC, DST
+  DMA3CTL = DMADT_0 + DMASRCBYTE + DMASRCINCR_3 + DMADSTBYTE + DMAEN; // Rpt, inc SRC, DST
   // DMA4CTL = DMADT_1 + DMASRCBYTE + DMASRCINCR_3 + DMADSTBYTE + DMAEN; // Rpt, inc SRC, DST
+  DMACTL1 = ROUNDROBIN;
 
   for (;;)                                  // Repeat
   {
   for(i=0;i<=95;i++)
      {
-       data[i]=i;
+       data_0[i]=i;
      }
-     
+    for(i=0;i<=95;i++)
+     {
+       data_1[i]=i;
+     }
+  for(i=0;i<=95;i++)
+     {
+       data_3[i]=i;
+     }  
 //     for(z=0; z<4; z++)
 //     {
 //        for(j=8*z; j<(8*z+8); j++)
@@ -90,9 +100,10 @@ void main(void)
    
 //    P1OUT |= 0x01;                          // Set P1.0 (LED on)
         DMA0CTL |= DMAREQ;                      // Trigger block transfer
+        DMA1CTL |= DMAREQ;                      // Trigger block transfer  
         // DMA1CTL |= DMAREQ;                      // Trigger block transfer
         // DMA2CTL |= DMAREQ;                      // Trigger block transfer
-        // DMA3CTL |= DMAREQ;                      // Trigger block transfer
+       DMA3CTL = DMADT_0 + DMASRCBYTE + DMASRCINCR_3 + DMADSTBYTE + DMAEN + DMAREQ;        
         // DMA4CTL |= DMAREQ;                      // Trigger block transfer
 //    P1OUT &= ~0x01;                         // Clear P1.0 (LED off)
 //    P3OUT = P6IN;
